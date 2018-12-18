@@ -160,7 +160,7 @@ def install(pkgname, dep_of=None, skip_install=False, builddir=BUILD_DIR, noconf
     deps = fetch_deps(pkg.pkgname, dep_of)
     if len(deps) > 0:
         for d in deps:
-            installed.append(install(d, dep_of=pkg.pkgname, skip_install=skip_install, noconfirm=noconfirm))
+            installed.extend(install(d, dep_of=pkg.pkgname, skip_install=skip_install, noconfirm=noconfirm))
 
     # Make sure the temporary directory exists
     builddir.mkdir(mode=0o700, parents=True, exist_ok=True)
