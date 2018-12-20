@@ -3,15 +3,15 @@ from datetime import datetime
 from pathlib import Path
 
 # URL Templates
-AUR_TMPL_URL="https://aur.archlinux.org/packages/{}/"
-AUR_PKGBUILD_URL="https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h={}"
-SNAPSHOT_TMPL_URL="https://aur.archlinux.org/cgit/aur.git/snapshot/{}.tar.gz"
+AUR_TMPL_URL = "https://aur.archlinux.org/packages/{}/"
+AUR_PKGBUILD_URL = "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h={}"
+SNAPSHOT_TMPL_URL = "https://aur.archlinux.org/cgit/aur.git/snapshot/{}.tar.gz"
 
 # Paths
-TMP_DIR=Path("/tmp/.sink-{}".format(datetime.now().isoformat().replace(':', '').replace('.', '')))
-BUILD_DIR=TMP_DIR.joinpath("build")
+TMP_DIR = Path("/tmp/.sink-{}".format(datetime.now().isoformat().replace(':', '').replace('.', '')))
+BUILD_DIR = TMP_DIR.joinpath("build")
 
-WARNING_BANNER=[
+WARNING_BANNER = [
     "========================THIS IS A DANGEROUS ACTION========================",
     "AUR Packages are user-generated and can not be trusted. It's also a good",
     "idea to make sure your system is up to date first as some packages may be",
@@ -21,15 +21,14 @@ WARNING_BANNER=[
 ]
 
 # Exit codes
-EXIT_CANCELLED=2
-EXIT_ERROR=3
+EXIT_CANCELLED = 2
+EXIT_ERROR = 3
 
 # Regex for yo butts
-PKGBUILD_DEPS_REGEX=r'depends\=\(([\w\d\s\-\>\<\=\.\n\'\"]+)\)'
-PKGBUILD_MAKEDEPS_REGEX=r'makedepends\=\(([\w\d\s\-\>\<\=\.\n\'\"]+)\)'
-PKGBUILD_DEP_W_VERSION=r'^([\w\d\-]+)([\>\<\=\d\-\.]*)$'
+PKGBUILD_DEPS_REGEX = r'depends\=\(([\w\d\s\-\>\<\=\.\n\'\"]+)\)'
+PKGBUILD_MAKEDEPS_REGEX = r'makedepends\=\(([\w\d\s\-\>\<\=\.\n\'\"]+)\)'
+PKGBUILD_DEP_W_VERSION = r'^([\w\d\-]+)([\>\<\=\d\-\.]*)$'
 
 # Exceptions
-class SinkException(Exception): pass
-class PackageNotFound(SinkException): pass
-
+class SinkException(Exception): pass # pylint: disable=missing-docstring,multiple-statements
+class PackageNotFound(SinkException): pass # pylint: disable=missing-docstring,multiple-statements

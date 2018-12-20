@@ -1,9 +1,11 @@
 """ Functions to interact with the AUR """
 import sys
 import re
-import requests
 from pathlib import Path
 from subprocess import check_call, CalledProcessError
+
+import requests
+
 from .const import (
     BUILD_DIR,
     SNAPSHOT_TMPL_URL,
@@ -12,6 +14,7 @@ from .const import (
     PKGBUILD_MAKEDEPS_REGEX,
     EXIT_ERROR,
     PackageNotFound,
+    SinkException,
 )
 from .package import pkgname_to_package
 from .arch import (
@@ -22,18 +25,18 @@ from .arch import (
 )
 from .logger import get_logger
 
-log = get_logger('aur')
+log = get_logger('aur') # pylint: disable=invalid-name
 
 def unpack_snapshot(sfile, pkgname):
     """ Unpack the snapshot """
 
     cmd = [
-            'tar',
-            '-xzf',
-            str(sfile.resolve()),
-            '-C',
-            str(BUILD_DIR.resolve())
-        ]
+        'tar',
+        '-xzf',
+        str(sfile.resolve()),
+        '-C',
+        str(BUILD_DIR.resolve())
+    ]
     
     log.debug("Running: {}".format(' '.join(cmd)))
 
@@ -43,13 +46,13 @@ def unpack_snapshot(sfile, pkgname):
 
 def makepkg(pkgdir, noconfirm=False):
     """ Run makepkg """
-    
+
     log.debug("Building package in {}".format(pkgdir))
 
     cmd = ['makepkg']
     if noconfirm:
         cmd.append('--noconfirm')
-    
+
     log.debug("Running: {}".format(' '.join(cmd)))
 
     return check_call(cmd, cwd=pkgdir)
@@ -62,7 +65,7 @@ def makepkg_install(pkgdir, noconfirm=False):
     cmd = ['makepkg', '-i']
     if noconfirm:
         cmd.append('--noconfirm')
-    
+
     log.debug("Running: {}".format(' '.join(cmd)))
 
     return check_call(cmd, cwd=pkgdir)
@@ -80,14 +83,14 @@ def download(pkgname):
         str(download_dest),
         SNAPSHOT_TMPL_URL.format(pkgname),
     ]
-    
+
     log.debug("Running: {}".format(' '.join(cmd)))
 
     check_call(cmd)
     return download_dest
 
 def fetch_pkgbuild(pkgname, dep_of=None):
-    """ Retreive a PKGBUILD for a specific package """ 
+    """ Retreive a PKGBUILD for a specific package """
 
     resp = requests.get(AUR_PKGBUILD_URL.format(pkgname))
     if resp.status_code == 404:
@@ -136,7 +139,7 @@ def install(pkgname, dep_of=None, skip_install=False, builddir=BUILD_DIR, noconf
         builddir = Path(builddir)
 
     log.debug("Preparing to install {}...".format(pkgname))
-    
+
     # Make sure this package isn't already installed
     installed_packages = get_installed_packages()
     if pkg.pkgname in installed_packages:
@@ -152,15 +155,18 @@ def install(pkgname, dep_of=None, skip_install=False, builddir=BUILD_DIR, noconf
             return [pkg.pkgname]
         try:
             return install_official_package(pkg.raw, noconfirm=noconfirm)
-        except CalledProcessError as e:
-            log.error("Error installing package {} from official repository.".format(pkg.pkgname))
+        except CalledProcessError:
+            log.exception("Error installing package {} from official repository.".format(pkg.pkgname))
             sys.exit(EXIT_ERROR)
 
     # Dependencies first!
     deps = fetch_deps(pkg.pkgname, dep_of)
     if len(deps) > 0:
         for d in deps:
-            installed.extend(install(d, dep_of=pkg.pkgname, skip_install=skip_install, noconfirm=noconfirm))
+            installed.extend(install(d,
+                                     dep_of=pkg.pkgname,
+                                     skip_install=skip_install,
+                                     noconfirm=noconfirm))
 
     # Make sure the temporary directory exists
     builddir.mkdir(mode=0o700, parents=True, exist_ok=True)

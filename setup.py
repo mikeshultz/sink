@@ -1,3 +1,4 @@
+""" setuptools installation configuration """
 import setuptools
 import sink
 
@@ -12,7 +13,11 @@ setuptools.setup(
     url='http://github.com/mikeshultz/sink',
     packages=['sink'],
     data_files=['README.md'],
-    install_requires=['coloredlogs>=10.0', 'lxml>=4.2.5', 'requests>=2.20.0', 'semantic-version>=2.6.0'],
+    install_requires=[
+        'coloredlogs>=10.0',
+        'requests>=2.20.0',
+        'semantic-version>=2.6.0'
+    ],
     extra_require={
         'dev': ['wheel-0.32.3', 'twine>=1.12.1'],
     },
@@ -28,7 +33,7 @@ setuptools.setup(
         'Topic :: System :: Software Distribution',
         'Topic :: System :: Systems Administration',
     ],
-    entry_points = {
+    entry_points={
         'console_scripts': ['sink=sink:main'],
     }
 )

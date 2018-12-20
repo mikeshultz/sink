@@ -2,7 +2,6 @@
 """ Download and install packages from AUR """
 import sys
 import argparse
-from lxml import html
 from .logger import get_logger, set_debug_logging
 from .const import (
     WARNING_BANNER,
@@ -12,9 +11,11 @@ from .const import (
 from .package import pkgname_to_package
 from .aur import install
 
-log = get_logger('cli')
+log = get_logger('cli') # pylint: disable=invalid-name
 
 def main():
+    """ CLI entry point function """
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('pkgname', metavar='PKGNAME', type=str, nargs='+',
                         help='Packages to install from AUR')
@@ -45,7 +46,11 @@ def main():
 
     builddir = args.dir or BUILD_DIR
     for pkg in args.pkgname:
-        installed = install(pkgname_to_package(pkg), skip_install=(not args.install), builddir=builddir, noconfirm=args.noconfirm)
+        installed = install(pkgname_to_package(pkg),
+                            skip_install=(not args.install),
+                            builddir=builddir,
+                            noconfirm=args.noconfirm)
+
     log.info("Sucsessfully installed/built these pakcages: {}".format(' '.join(installed)))
 
 if __name__ == '__main__':

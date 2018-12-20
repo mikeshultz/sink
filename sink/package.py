@@ -3,7 +3,8 @@ import re
 import semantic_version
 from .const import PKGBUILD_DEP_W_VERSION
 
-class Package(object):
+# pylint: disable=too-few-public-methods
+class Package:
     """ Package object that handles all the weirdness
 
         ref: https://wiki.archlinux.org/index.php/PKGBUILD#depends
