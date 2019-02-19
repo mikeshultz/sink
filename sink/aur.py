@@ -12,9 +12,12 @@ from .const import (
     AUR_PKGBUILD_URL,
     PKGBUILD_DEPS_REGEX,
     PKGBUILD_MAKEDEPS_REGEX,
+    EXIT_OK,
     EXIT_ERROR,
     PackageNotFound,
     SinkException,
+    ANSWERS_POSITIVE,
+    ANSWERS_NEGATIVE,
 )
 from .package import pkgname_to_package
 from .arch import (
@@ -26,6 +29,15 @@ from .arch import (
 from .logger import get_logger
 
 log = get_logger('aur') # pylint: disable=invalid-name
+
+def prompt_yes_no(msg):
+    """ Prompt a user for a yes/no question """
+    while True:
+        inp = input(msg).lower()
+        if inp in ANSWERS_POSITIVE:
+            return True
+        elif inp in ANSWERS_NEGATIVE:
+            return False
 
 def unpack_snapshot(sfile, pkgname):
     """ Unpack the snapshot """
@@ -113,21 +125,45 @@ def fetch_deps(pkgname, dep_of=None):
     pkgbuild = fetch_pkgbuild(pkgname, dep_of)
 
     deps = []
+    make_deps = []
     deps_match = re.search(PKGBUILD_DEPS_REGEX, pkgbuild)
     makedeps_match = re.search(PKGBUILD_MAKEDEPS_REGEX, pkgbuild)
 
     if not deps_match and not makedeps_match:
         log.debug("Unable to find either depends or makedepends in PKGBUILD")
     else:
-        deps = pkgbuild_arrstr_to_list(deps_match.group(1))
-        make_deps = pkgbuild_arrstr_to_list(makedeps_match.group(1))
-        if len(make_deps) > 0:
+        if deps_match:
+            deps = pkgbuild_arrstr_to_list(deps_match.group(1))
+        if makedeps_match:
+            make_deps = pkgbuild_arrstr_to_list(makedeps_match.group(1))
+        if len(deps) + len(make_deps) > 0:
             deps = sorted(list(set(deps + make_deps)))
 
     if len(deps) > 0:
         map(pkgname_to_package, deps)
 
     return deps
+
+def confirm_pkgbuild(pkgdir):
+    """ Display a PKGBUILD from a given dir for the user to review """
+
+    CONFIRM_SUFFIX = '.confirm'
+    pkgbuild = pkgdir.joinpath('PKGBUILD')
+
+    if not pkgbuild.is_file():
+        raise Exception("PKGBUILD missing")
+
+    # Load PKGBUILD into vim
+    try:
+        check_call(['vim', '{}'.format(pkgbuild)])
+    except CalledProcessError:
+        log.debug("vim exited non-zero.")
+        return False
+
+    if prompt_yes_no("Continue building PKGBUILD? [y/n] "):
+        return True
+
+    return False
 
 def install(pkgname, dep_of=None, skip_install=False, builddir=BUILD_DIR, noconfirm=False):
     """ Install a package from AUR """
@@ -194,6 +230,13 @@ def install(pkgname, dep_of=None, skip_install=False, builddir=BUILD_DIR, noconf
     if not dest_dir or not dest_dir.exists():
         log.error("Extracted package missing for {}".format(pkg.pkgname))
         sys.exit(EXIT_ERROR)
+
+    # Confirm the PKGBUILD with the user
+    if not noconfirm:
+        user_confirmed = confirm_pkgbuild(dest_dir)
+        if not user_confirmed:
+            log.warn("User declined PKGBUILD for {}".format(pkg.pkgname))
+            sys.exit(EXIT_OK)
 
     # Build
     try:

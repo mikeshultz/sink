@@ -21,6 +21,7 @@ WARNING_BANNER = [
 ]
 
 # Exit codes
+EXIT_OK = 0
 EXIT_CANCELLED = 2
 EXIT_ERROR = 3
 
@@ -28,6 +29,10 @@ EXIT_ERROR = 3
 PKGBUILD_DEPS_REGEX = r'depends\=\(([\w\d\s\-\>\<\=\.\n\'\"]+)\)'
 PKGBUILD_MAKEDEPS_REGEX = r'makedepends\=\(([\w\d\s\-\>\<\=\.\n\'\"]+)\)'
 PKGBUILD_DEP_W_VERSION = r'^([\w\d\-]+)([\>\<\=\d\-\.]*)$'
+
+# Possible useful answers to a yes/no prompt
+ANSWERS_POSITIVE = ['y', 'ye', 'yes']
+ANSWERS_NEGATIVE = ['n', 'no', 'negatory']
 
 # Exceptions
 class SinkException(Exception): pass # pylint: disable=missing-docstring,multiple-statements
