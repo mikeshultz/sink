@@ -14,6 +14,6 @@ the GitHub issue tracker.
       -h, --help         show this help message and exit
       -i, --install      Install the package, don't just download and unpack
       -d DIR, --dir DIR  Use this directory to build
-      -y, --noconfirm    Do not confirm before installing packages.
+      -y, --noconfirm    Do not confirm before installing packages, and do not review PKGBUILDs  NOT RECOMMENDED
       --debug            Show debug messages
   

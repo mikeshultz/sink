@@ -24,7 +24,7 @@ def main():
     parser.add_argument('-d', '--dir', type=str, default=None,
                         help="Use this directory to build")
     parser.add_argument('-y', '--noconfirm', action='store_true', default=False,
-                        help="Do not confirm before installing packages.")
+                        help="Do not confirm before installing packages, and do not review PKGBUILDs. NOT RECOMMENDED")
     parser.add_argument('--debug', action='store_true', default=False,
                         help="Show debug messages")
 
