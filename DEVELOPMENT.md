@@ -10,6 +10,6 @@ Create a virtualenv to work with and install the package for editing.
 
 ## Release
 
-First, bump the version in `sink/__init__.py` and then run the release script:
+First, bump the version in `sink/__init__.py`, tag that commit `v[version]`, and then run the release script:
 
     ./release.sh
