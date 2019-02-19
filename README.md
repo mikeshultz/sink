@@ -1,8 +1,7 @@
 # Sink
 
-Arch Linux AUR installer for the lazy.  You probably shouldn't use this.  AUR 
-packages are horribly insecure and each `PKGBUILD` should be individually 
-reviewed.
+Arch Linux AUR installer for the lazy.  Probably still a little buggy.  Please report any issues in
+the GitHub issue tracker.
 
     usage: sink [-h] [-i] [-d DIR] [-y] [--debug] PKGNAME [PKGNAME ...]
 
