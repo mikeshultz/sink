@@ -18,8 +18,8 @@ setuptools.setup(
         'requests>=2.20.0',
         'semantic-version>=2.6.0'
     ],
-    extra_require={
-        'dev': ['wheel-0.32.3', 'twine>=1.12.1'],
+    extras_require={
+        'dev': ['wheel>=0.32.3', 'twine>=1.12.1'],
     },
     license=sink.__license__,
     zip_safe=False,
