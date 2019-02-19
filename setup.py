@@ -34,6 +34,6 @@ setuptools.setup(
         'Topic :: System :: Systems Administration',
     ],
     entry_points={
-        'console_scripts': ['sink=sink:main'],
+        'console_scripts': ['sink=sink.cli:main'],
     }
 )
